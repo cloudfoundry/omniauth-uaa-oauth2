@@ -1,0 +1,9 @@
+Change-Id: I4a8111dbbf5efea326093c77dfc271136bf31dea
+Code-Review+1: Dale Olds <olds@rbcon.com>
+Verified+1: Dale Olds <olds@rbcon.com>
+Code-Review+2: Joel D'sa <jdsa@vmware.com>
+Submitted-by: Joel D'sa <jdsa@vmware.com>
+Submitted-at: Fri, 02 Nov 2012 21:34:38 +0000
+Reviewed-on: http://reviews.cloudfoundry.org/10995
+Project: omniauth-uaa-oauth2
+Branch: refs/heads/master
