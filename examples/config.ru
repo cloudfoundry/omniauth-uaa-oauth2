@@ -23,12 +23,12 @@ class App < Sinatra::Base
   get '/' do
     <<-HTML
     <ul>
-      <li><a href='/auth/uaa_oauth2'>Sign in with Google</a></li>
+      <li><a href='/auth/uaa_oauth2'>Sign in with Cloud Foundry</a></li>
     </ul>
     HTML
   end
 
-  get '/auth/:provider/callback' do
+  get '/auth/uaa_oauth2/callback' do
     content_type 'text/plain'
     request.env['omniauth.auth'].to_hash.inspect rescue "No Data"
   end
