@@ -18,12 +18,12 @@ require 'securerandom'
 
 module OmniAuth
   module Strategies
-    class UaaOauth2
+    class Cloudfoundry
       include OmniAuth::Strategy
 
       args [:client_id, :client_secret]
 
-      option :name, "uaa_oauth2"
+      option :name, "cloudfoundry"
       option :auth_server_url, nil
       option :token_server_url, nil
       option :scope, nil

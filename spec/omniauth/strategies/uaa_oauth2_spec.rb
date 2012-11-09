@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'omniauth-uaa-oauth2'
 
-describe OmniAuth::Strategies::UaaOauth2 do
+describe OmniAuth::Strategies::Cloudfoundry do
   def app; lambda{|env| [200, {}, ["Hello."]]} end
 
   before :each do
@@ -18,14 +18,14 @@ describe OmniAuth::Strategies::UaaOauth2 do
 
   subject do
     args = ['app', 'appclientsecret', @options || {}].compact
-    OmniAuth::Strategies::UaaOauth2.new(app, *args).tap do |strategy|
+    OmniAuth::Strategies::Cloudfoundry.new(app, *args).tap do |strategy|
       strategy.stub(:request) { @request }
     end
   end
 
   describe '#callback_path' do
     it 'has the correct callback path' do
-      subject.callback_path.should eq('/auth/uaa_oauth2/callback')
+      subject.callback_path.should eq('/auth/cloudfoundry/callback')
     end
   end
 
