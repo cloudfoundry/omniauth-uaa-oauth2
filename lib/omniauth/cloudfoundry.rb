@@ -11,4 +11,4 @@
 # subcomponent's license, as noted in the LICENSE file.
 #++
 
-require 'omniauth/strategies/uaa_oauth2'
+require 'omniauth/strategies/cloudfoundry'

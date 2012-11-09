@@ -29,7 +29,7 @@ Gem::Specification.new do |gem|
   gem.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   gem.name          = "omniauth-uaa-oauth2"
   gem.require_paths = ["lib"]
-  gem.version       = OmniAuth::UaaOauth2::VERSION
+  gem.version       = OmniAuth::CloudFoundry::VERSION
 
   gem.add_runtime_dependency 'cf-uaa-client'
 

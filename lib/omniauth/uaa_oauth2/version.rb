@@ -12,7 +12,7 @@
 #++
 
 module OmniAuth
-  module UaaOauth2
+  module CloudFoundry
     VERSION = "0.0.1"
   end
 end

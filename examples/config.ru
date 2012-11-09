@@ -23,14 +23,14 @@ class App < Sinatra::Base
   get '/' do
     <<-HTML
     <ul>
-      <li><a href='/auth/uaa_oauth2'>Sign in with Cloud Foundry</a></li>
+      <li><a href='/auth/cloudfoundry'>Sign in with Cloud Foundry</a></li>
     </ul>
     HTML
   end
 
-  get '/auth/uaa_oauth2/callback' do
-    content_type 'text/plain'
-    request.env['omniauth.auth'].to_hash.inspect rescue "No Data"
+  get '/auth/cloudfoundry/callback' do
+    content_type 'application/json'
+    request.env['omniauth.auth'].to_hash.to_json rescue "No Data"
   end
   
   get '/auth/failure' do
@@ -42,8 +42,8 @@ end
 use Rack::Session::Cookie, :secret => ENV['RACK_COOKIE_SECRET']
 
 use OmniAuth::Builder do
-  provider :uaa_oauth2, 'app', 'appclientsecret', {:auth_server_url => "http://localhost:8080/login", :token_server_url => "http://localhost:8080/uaa"}
-  #provider :uaa_oauth2, '<register your client>', '<register your client secret>', {:auth_server_url => "https://login.cloudfoundry.com", :token_server_url => "https://uaa.cloudfoundry.com"}
+  provider :cloud_foundry, 'app', 'appclientsecret', {:auth_server_url => "http://localhost:8080/login", :token_server_url => "http://localhost:8080/uaa"}
+  #provider :cloud_foundry, '<register your client>', '<register your client secret>', {:auth_server_url => "https://login.cloudfoundry.com", :token_server_url => "https://uaa.cloudfoundry.com"}
 end
 
 run App.new
