@@ -33,15 +33,22 @@ describe OmniAuth::Strategies::Cloudfoundry do
     it 'should set the right auth and token server' do
       @options = {:auth_server_url => 'https://login.cloudfoundry.com'}
       subject.client
-      subject.options[:auth_server_url].should eq('https://login.cloudfoundry.com')
-      subject.options[:token_server_url].should eq('https://login.cloudfoundry.com')
+      subject.auth_server_url.should eq('https://login.cloudfoundry.com')
+      subject.token_server_url.should eq('https://login.cloudfoundry.com')
     end
 
     it 'should set the right auth and token server if independently set' do
       @options = {:auth_server_url => 'https://login.cloudfoundry.com', :token_server_url => 'https://uaa.cloudfoundry.com'}
       subject.client
-      subject.options[:auth_server_url].should eq('https://login.cloudfoundry.com')
-      subject.options[:token_server_url].should eq('https://uaa.cloudfoundry.com')
+      subject.auth_server_url.should eq('https://login.cloudfoundry.com')
+      subject.token_server_url.should eq('https://uaa.cloudfoundry.com')
+    end
+
+    it 'should set the right auth and token server' do
+      @options = {:auth_server_url => 'login.cloudfoundry.com'}
+      subject.client
+      subject.auth_server_url.should eq('https://login.cloudfoundry.com')
+      subject.token_server_url.should eq('https://login.cloudfoundry.com')
     end
   end
 

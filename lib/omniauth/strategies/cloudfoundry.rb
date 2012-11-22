@@ -30,16 +30,38 @@ module OmniAuth
       option :async_calls, false
 
       attr_accessor :access_token
+      attr_reader :token_issuer
+      attr_reader :auth_server_url
+      attr_reader :token_server_url
+
 
       def client
-        options.token_server_url ||= options.auth_server_url
-        token_issuer ||= CF::UAA::TokenIssuer.new(options.auth_server_url,
-                                                   options.client_id,
-                                                   options.client_secret,
-                                                   options.token_server_url)
-        log :info, "Client: #{options.client_id} auth_server: #{options.auth_server_url} token_server: #{options.token_server_url}"
-        token_issuer.logger = OmniAuth.logger
-        token_issuer
+
+        unless @token_issuer
+          unless @auth_server_url
+            @auth_server_url ||= options.auth_server_url
+            unless @auth_server_url.start_with?("http")
+              @auth_server_url = "https://#{@auth_server_url}"
+            end
+          end
+
+          unless @token_server_url
+            @token_server_url = options.token_server_url || options.auth_server_url
+
+            unless @token_server_url.start_with?("http")
+              @token_server_url = "https://#{@token_server_url}"
+            end
+          end
+
+          @token_issuer ||= CF::UAA::TokenIssuer.new(@auth_server_url,
+                                                     options.client_id,
+                                                     options.client_secret,
+                                                     @token_server_url)
+          log :info, "Client: #{options.client_id} auth_server: #{@auth_server_url} token_server: #{@token_server_url}"
+          @token_issuer.logger = OmniAuth.logger
+        end
+
+        @token_issuer
       end
 
       def callback_url
@@ -67,9 +89,10 @@ module OmniAuth
       end
 
       def callback_phase
+        log :info, "In callback phase #{request.query_string}"
         self.access_token = build_access_token(request.query_string)
         self.access_token = refresh(access_token) if expired?(access_token)
-        log :debug, "Got access token #{access_token.inspect}"
+        log :info, "Got access token #{access_token.inspect}"
 
         super
       end
@@ -77,19 +100,19 @@ module OmniAuth
       credentials do
         {
           'token' => access_token.auth_header,
-          'refresh_token' => access_token.info[:refresh_token],
-          'authorized_scopes' => access_token.info[:scope]
+          'refresh_token' => access_token.info["refresh_token"],
+          'authorized_scopes' => access_token.info["scope"]
         }
       end
 
-      uid{ raw_info[:user_id] || raw_info[:email] }
+      uid{ raw_info["user_id"] || raw_info["email"] }
 
       info do
         prune!({
-          :name       => raw_info[:name],
-          :email      => raw_info[:email],
-          :first_name => raw_info[:given_name],
-          :last_name  => raw_info[:family_name]
+          :name       => raw_info["name"],
+          :email      => raw_info["email"],
+          :first_name => raw_info["given_name"],
+          :last_name  => raw_info["family_name"]
         })
       end
 
@@ -100,7 +123,7 @@ module OmniAuth
       end
 
       def raw_info
-        @raw_info ||= CF::UAA::Misc.whoami(options.token_server_url, self.access_token.auth_header)
+        @raw_info ||= CF::UAA::Misc.whoami(@token_server_url, self.access_token.auth_header)
       end
 
       def prune!(hash)
