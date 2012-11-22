@@ -38,7 +38,6 @@ module OmniAuth
                                                    options.client_secret,
                                                    options.token_server_url)
         log :info, "Client: #{options.client_id} auth_server: #{options.auth_server_url} token_server: #{options.token_server_url}"
-        token_issuer.async = options.async_calls if EM && EM.reactor_running?
         token_issuer.logger = OmniAuth.logger
         token_issuer
       end

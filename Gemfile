@@ -13,7 +13,7 @@
 
 source 'http://rubygems.org'
 
-gem 'cf-uaa-client', '~> 1.2', :git => 'https://github.com/cloudfoundry/uaa.git', :ref => '603bb76ce8'
+gem 'cf-uaa-lib', :git => 'git@github.com:cloudfoundry/cf-uaa-lib.git', :ref => '232ebafe'
 
 gemspec
 

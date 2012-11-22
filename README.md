@@ -13,6 +13,8 @@ or
 
 see: https://rvm.io/ or http://rbenv.org/
 
+Build and install the cf-uaa-lib gem located at https://github.com/cloudfoundry/cf-uaa-lib
+
 Build the gem
 
       $ bundle install
