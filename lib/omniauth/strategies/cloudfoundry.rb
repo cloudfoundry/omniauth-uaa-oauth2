@@ -99,7 +99,7 @@ module OmniAuth
 
       credentials do
         {
-          'token' => access_token.auth_header,
+          'token' => access_token.info["access_token"],
           'refresh_token' => access_token.info["refresh_token"],
           'authorized_scopes' => access_token.info["scope"]
         }
