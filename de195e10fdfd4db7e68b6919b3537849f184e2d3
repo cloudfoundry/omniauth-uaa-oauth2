@@ -1,0 +1,8 @@
+Change-Id: Ide195e10fdfd4db7e68b6919b3537849f184e2d3
+Code-Review+2: Joel D'sa <jdsa@vmware.com>
+Verified+1: CI Master <cf-ci@rbcon.com>
+Submitted-by: Joel D'sa <jdsa@vmware.com>
+Submitted-at: Mon, 26 Nov 2012 22:23:42 +0000
+Reviewed-on: http://reviews.cloudfoundry.org/11711
+Project: omniauth-uaa-oauth2
+Branch: refs/heads/master
