@@ -56,7 +56,7 @@ module OmniAuth
           @token_issuer ||= CF::UAA::TokenIssuer.new(@auth_server_url,
                                                      options.client_id,
                                                      options.client_secret,
-                                                     @token_server_url)
+                                                     {:token_target => @token_server_url})
           log :info, "Client: #{options.client_id} auth_server: #{@auth_server_url} token_server: #{@token_server_url}"
           @token_issuer.logger = OmniAuth.logger
         end
