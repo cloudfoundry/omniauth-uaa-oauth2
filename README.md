@@ -26,3 +26,5 @@ Install it
 
 
 See the examples folder for details on how to use it.
+
+Warning: Unlike the omniauth-oauth2 gem, this gem does not support the oauth2 'state' security parameter.
