@@ -18,6 +18,25 @@ require 'securerandom'
 
 module OmniAuth
   module Strategies
+    class CFAccessToken
+      EMPTY_INFO = {
+        'access_token' => '',
+        'refresh_token' => '',
+        'scope' => ''
+      }
+
+      attr_reader :info, :auth_header
+
+      def initialize(info=EMPTY_INFO, auth_header='')
+        @info = info
+        @auth_header = auth_header
+      end
+
+      def empty?
+        @info == EMPTY_INFO
+      end
+    end
+
     class Cloudfoundry
       include OmniAuth::Strategy
 
@@ -94,7 +113,7 @@ module OmniAuth
         else
           log :info, "In callback phase #{request.query_string}"
           self.access_token = build_access_token(request.query_string)
-          self.access_token = refresh(access_token) if expired?(access_token)
+          self.access_token = refresh(access_token) if !access_token.empty? && expired?(access_token)
           log :info, "Got access token #{access_token.inspect}"
 
           super
@@ -128,6 +147,9 @@ module OmniAuth
 
       def raw_info
         @raw_info ||= CF::UAA::Misc.whoami(@token_server_url, self.access_token.auth_header)
+      rescue CF::UAA::TargetError => e
+        log :error, "#{e.message}: #{e.info}"
+        {}
       end
 
       def prune!(hash)
@@ -139,7 +161,11 @@ module OmniAuth
 
       def build_access_token(query_string)
         log :info, "Fetching access token"
-        client.authcode_grant(session.delete('redir_uri'), query_string)
+        token = client.authcode_grant(session.delete('redir_uri'), query_string)
+        CFAccessToken.new(token.info, token.auth_header)
+      rescue CF::UAA::InvalidToken => e
+        log :error, "Invalid token: #{e.message}"
+        CFAccessToken.new
       end
 
       def refresh(access_token)
