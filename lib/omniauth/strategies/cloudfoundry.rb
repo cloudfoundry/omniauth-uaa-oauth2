@@ -108,12 +108,16 @@ module OmniAuth
       end
 
       def callback_phase
-        log :info, "In callback phase #{request.query_string}"
-        self.access_token = build_access_token(request.query_string)
-        self.access_token = refresh(access_token) if !access_token.empty? && expired?(access_token)
-        log :info, "Got access token #{access_token.inspect}"
+        if error = request.params['error_reason'] || request.params['error']
+          fail!(error, CallbackError.new(request.params['error'], request.params['error_description'] || request.params['error_reason'], request.params['error_uri']))
+        else
+          log :info, "In callback phase #{request.query_string}"
+          self.access_token = build_access_token(request.query_string)
+          self.access_token = refresh(access_token) if !access_token.empty? && expired?(access_token)
+          log :info, "Got access token #{access_token.inspect}"
 
-        super
+          super
+        end
       end
 
       credentials do
@@ -170,6 +174,20 @@ module OmniAuth
         access_token = access_token.auth_header if access_token.respond_to? :auth_header
         expiry = CF::UAA::TokenCoder.decode(access_token.split()[1], nil, nil, false)[:expires_at]		
         expiry.is_a?(Integer) && expiry <= Time.now.to_i
+      end
+
+      class CallbackError < StandardError
+        attr_accessor :error, :error_reason, :error_uri
+
+        def initialize(error, error_reason = nil, error_uri = nil)
+          self.error = error
+          self.error_reason = error_reason
+          self.error_uri = error_uri
+        end
+
+        def message
+          [error, error_reason, error_uri].compact.join(' | ')
+        end
       end
     end
   end
