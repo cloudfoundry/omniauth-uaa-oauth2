@@ -160,7 +160,7 @@ module OmniAuth
         log :info, "Fetching access token"
         token = client.authcode_grant(session.delete('redir_uri'), query_string)
         CFAccessToken.new(token.info, token.auth_header)
-      rescue CF::UAA::InvalidTokenError => e
+      rescue CF::UAA::InvalidToken => e
         log :error, "Invalid token: #{e.message}"
         CFAccessToken.new
       end
