@@ -2,8 +2,8 @@ PATH
   remote: .
   specs:
     omniauth-uaa-oauth2 (0.0.3)
-      cf-uaa-lib
-      cf-uaa-lib
+      cf-uaa-lib (>= 1.3.1, < 2.0)
+      cf-uaa-lib (>= 1.3.1, < 2.0)
       omniauth (~> 1.0)
 
 GEM
@@ -12,10 +12,10 @@ GEM
     cf-uaa-lib (1.3.7)
       multi_json
     diff-lcs (1.1.3)
-    hashie (1.2.0)
+    hashie (2.0.5)
     multi_json (1.6.0)
-    omniauth (1.1.2)
-      hashie (~> 1.2)
+    omniauth (1.1.4)
+      hashie (>= 1.2, < 3)
       rack
     rack (1.4.1)
     rack-protection (1.2.0)
