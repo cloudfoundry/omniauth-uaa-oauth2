@@ -52,6 +52,23 @@ describe OmniAuth::Strategies::Cloudfoundry do
     end
   end
 
+  describe '#callback_phase' do
+    context 'when the callback request contains an error message' do
+      it 'makes a call to #fail! with the error and a CallbackError' do
+        @request.stub(:params) do
+          {
+            'error'             => 'access_denied',
+            'error_description' => 'User denied access',
+            'state'             => 'some-state-value'
+          }
+        end
+
+        subject.should_receive(:fail!).with('access_denied', instance_of(OmniAuth::Strategies::Cloudfoundry::CallbackError))
+        subject.callback_phase
+      end
+    end
+  end
+
   describe 'set scopes' do
     it 'should set the right scopes if requested' do
       @options = {:auth_server_url => 'https://login.cloudfoundry.com', :token_server_url => 'https://uaa.cloudfoundry.com', :scope => "openid cloud_controller.read"}
@@ -65,5 +82,4 @@ describe OmniAuth::Strategies::Cloudfoundry do
       subject.options[:scope].should eq(nil)
     end
   end
-
 end

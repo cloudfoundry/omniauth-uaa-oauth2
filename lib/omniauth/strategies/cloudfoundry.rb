@@ -18,6 +18,25 @@ require 'securerandom'
 
 module OmniAuth
   module Strategies
+    class CFAccessToken
+      EMPTY_INFO = {
+        'access_token' => '',
+        'refresh_token' => '',
+        'scope' => ''
+      }
+
+      attr_reader :info, :auth_header
+
+      def initialize(info=EMPTY_INFO, auth_header='')
+        @info = info
+        @auth_header = auth_header
+      end
+
+      def empty?
+        @info == EMPTY_INFO
+      end
+    end
+
     class Cloudfoundry
       include OmniAuth::Strategy
 
@@ -89,12 +108,16 @@ module OmniAuth
       end
 
       def callback_phase
-        log :info, "In callback phase #{request.query_string}"
-        self.access_token = build_access_token(request.query_string)
-        self.access_token = refresh(access_token) if expired?(access_token)
-        log :info, "Got access token #{access_token.inspect}"
+        if error = request.params['error_reason'] || request.params['error']
+          fail!(error, CallbackError.new(request.params['error'], request.params['error_description'] || request.params['error_reason'], request.params['error_uri']))
+        else
+          log :info, "In callback phase #{request.query_string}"
+          self.access_token = build_access_token(request.query_string)
+          self.access_token = refresh(access_token) if !access_token.empty? && expired?(access_token)
+          log :info, "Got access token #{access_token.inspect}"
 
-        super
+          super
+        end
       end
 
       credentials do
@@ -124,6 +147,9 @@ module OmniAuth
 
       def raw_info
         @raw_info ||= CF::UAA::Misc.whoami(@token_server_url, self.access_token.auth_header)
+      rescue CF::UAA::TargetError => e
+        log :error, "#{e.message}: #{e.info}"
+        {}
       end
 
       def prune!(hash)
@@ -135,7 +161,11 @@ module OmniAuth
 
       def build_access_token(query_string)
         log :info, "Fetching access token"
-        client.authcode_grant(session.delete('redir_uri'), query_string)
+        token = client.authcode_grant(session.delete('redir_uri'), query_string)
+        CFAccessToken.new(token.info, token.auth_header)
+      rescue CF::UAA::InvalidToken => e
+        log :error, "Invalid token: #{e.message}"
+        CFAccessToken.new
       end
 
       def refresh(access_token)
@@ -147,6 +177,20 @@ module OmniAuth
         access_token = access_token.auth_header if access_token.respond_to? :auth_header
         expiry = CF::UAA::TokenCoder.decode(access_token.split()[1], nil, nil, false)[:expires_at]		
         expiry.is_a?(Integer) && expiry <= Time.now.to_i
+      end
+
+      class CallbackError < StandardError
+        attr_accessor :error, :error_reason, :error_uri
+
+        def initialize(error, error_reason = nil, error_uri = nil)
+          self.error = error
+          self.error_reason = error_reason
+          self.error_uri = error_uri
+        end
+
+        def message
+          [error, error_reason, error_uri].compact.join(' | ')
+        end
       end
     end
   end
