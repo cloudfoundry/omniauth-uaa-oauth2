@@ -1,6 +1,6 @@
-omniauth-uaa-oauth2 09012012
+cf-omniauth-uaa-oauth
 
-Copyright (c) 2012 VMware, Inc. All Rights Reserved. 
+Copyright (c) 2013 Pivotal Software, Inc. All Rights Reserved. 
 
 This product is licensed to you under the Apache License, Version 2.0 (the "License").  
 You may not use this product except in compliance with the License.  
