@@ -53,6 +53,19 @@ describe OmniAuth::Strategies::Cloudfoundry do
   end
 
   describe '#callback_phase' do
+    let(:token_issuer) { CF::UAA::TokenIssuer.new('target', 'client_id') }
+
+    before do
+      subject.stub(:client).and_return(token_issuer)
+      subject.stub(:session).and_return({})
+      subject.stub(:env).and_return({})
+      subject.stub(:expired?) { true }
+      @request.stub(:query_string)
+      CF::UAA::Misc.stub(:whoami) { {
+        "omniauth.auth" => "something"
+      } }
+    end
+
     context 'when the callback request contains an error message' do
       it 'makes a call to #fail! with the error and a CallbackError' do
         @request.stub(:params) do
@@ -64,6 +77,30 @@ describe OmniAuth::Strategies::Cloudfoundry do
         end
 
         subject.should_receive(:fail!).with('access_denied', instance_of(OmniAuth::Strategies::Cloudfoundry::CallbackError))
+        subject.callback_phase
+      end
+    end
+
+    context 'when the access token is not empty and expired' do
+      let(:refresh_access_token) { OmniAuth::Strategies::CFAccessToken.new({
+                                     'access_token' => 'some-refreshed-token'
+                                   },
+                                   'auth-header'
+                                 )}
+
+      it 'should call refresh on the access token' do
+        token_issuer.stub(:authcode_grant).and_return(CF::UAA::TokenInfo.new({}))
+
+        subject.should_receive(:refresh).with(anything).and_return(refresh_access_token)
+        subject.callback_phase
+      end
+    end
+
+    context 'when the access token is empty and expired' do
+      it 'should not call refresh on the access token' do
+        token_issuer.stub(:authcode_grant).and_raise(CF::UAA::InvalidToken)
+
+        subject.should_not_receive(:refresh)
         subject.callback_phase
       end
     end
@@ -80,6 +117,79 @@ describe OmniAuth::Strategies::Cloudfoundry do
       @options = {:auth_server_url => 'https://login.cloudfoundry.com', :token_server_url => 'https://uaa.cloudfoundry.com'}
       subject.client
       subject.options[:scope].should eq(nil)
+    end
+  end
+
+  describe 'empty?' do
+    it 'is empty when initialized without info' do
+      token = OmniAuth::Strategies::CFAccessToken.new
+      token.empty?.should be_true
+    end
+
+    it 'is not empty when initialized with info' do
+      token = OmniAuth::Strategies::CFAccessToken.new({
+        'access_token' => 'some-token',
+      })
+      token.empty?.should be_false
+    end
+  end
+
+  describe 'raw_info' do
+    before do
+      @omni_logger = OmniAuth.config.logger
+    end
+
+    after do
+      CF::UAA::Misc.rspec_reset
+      OmniAuth.config.logger = @omni_logger
+    end
+
+    it 'should return raw info' do
+      CF::UAA::Misc.stub(:whoami) { "something" }
+
+      subject.access_token = OmniAuth::Strategies::CFAccessToken.new
+      subject.raw_info.should_not be_empty
+    end
+
+    it 'should rescue, log, and return empty hash on target error' do
+      CF::UAA::Misc.stub(:whoami).and_raise(CF::UAA::TargetError)
+      logger = double("logger")
+      logger.should_receive(:error).once
+      OmniAuth.config.logger = logger
+
+      subject.access_token = OmniAuth::Strategies::CFAccessToken.new
+      subject.raw_info.should be_empty
+    end
+  end
+
+  describe 'build_access_token' do
+    let(:token_issuer) { CF::UAA::TokenIssuer.new('target', 'client_id') }
+    let(:logger) { double("logger") }
+    let!(:omni_logger) { OmniAuth.config.logger }
+
+    before do
+      OmniAuth.config.logger = logger
+      logger.should_receive(:info).once
+
+      subject.stub(:client).and_return(token_issuer)
+      subject.stub(:session).and_return({})
+    end
+
+    after do
+      OmniAuth.config.logger = omni_logger
+    end
+
+    it 'should return an access token' do
+      token_issuer.stub(:authcode_grant).and_return(CF::UAA::TokenInfo.new({}))
+
+      subject.build_access_token('query-string').should_not be_empty
+    end
+
+    it 'should rescue, log, and return empty token on invalid token error' do
+      token_issuer.stub(:authcode_grant).and_raise(CF::UAA::InvalidToken)
+      logger.should_receive(:error).once
+
+      subject.build_access_token('query-string').should be_empty
     end
   end
 end
