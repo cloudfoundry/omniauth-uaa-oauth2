@@ -15,9 +15,6 @@
 require File.expand_path('../lib/omniauth/uaa_oauth2/version', __FILE__)
 
 Gem::Specification.new do |gem|
-  gem.add_dependency 'omniauth', '~> 1.0'
-  gem.add_dependency 'cf-uaa-lib', ['>= 1.3.1', '< 2.0']
-
   gem.authors       = ["Joel D'sa", "Dave Syer", "Dale Olds", "Vidya Valmikinathan", "Luke Taylor"]
   gem.email         = ["jdsa@vmware.com", "olds@vmware.com", "dsyer@vmware.com", "vidya@vmware.com", "ltaylor@vmware.com"]
   gem.description   = %q{An OmniAuth strategy for the Cloudfoundry UAA}
@@ -31,6 +28,7 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
   gem.version       = OmniAuth::Cloudfoundry::VERSION
 
+  gem.add_runtime_dependency 'omniauth', '~> 1.0'
   gem.add_runtime_dependency 'cf-uaa-lib', ['>= 1.3.1', '< 2.0']
 
   gem.add_development_dependency 'rspec', '~> 2.6.0'
