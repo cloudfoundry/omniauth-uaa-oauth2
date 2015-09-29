@@ -146,7 +146,7 @@ module OmniAuth
       end
 
       def raw_info
-        @raw_info ||= CF::UAA::Misc.whoami(@token_server_url, self.access_token.auth_header)
+        @raw_info ||= CF::UAA::Info.whoami(@token_server_url, self.access_token.auth_header)
       rescue CF::UAA::TargetError => e
         log :error, "#{e.message}: #{e.info}"
         {}

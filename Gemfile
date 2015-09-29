@@ -13,7 +13,7 @@
 
 source 'http://rubygems.org'
 
-gem 'cf-uaa-lib', '~> 1.3.7'
+gem 'cf-uaa-lib', '~> 3.2.4'
 
 gemspec
 

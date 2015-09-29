@@ -61,7 +61,7 @@ describe OmniAuth::Strategies::Cloudfoundry do
       subject.stub(:env).and_return({})
       subject.stub(:expired?) { true }
       @request.stub(:query_string)
-      CF::UAA::Misc.stub(:whoami) { {
+      CF::UAA::Info.stub(:whoami) { {
         "omniauth.auth" => "something"
       } }
     end
@@ -140,19 +140,19 @@ describe OmniAuth::Strategies::Cloudfoundry do
     end
 
     after do
-      CF::UAA::Misc.rspec_reset
+      CF::UAA::Info.rspec_reset
       OmniAuth.config.logger = @omni_logger
     end
 
     it 'should return raw info' do
-      CF::UAA::Misc.stub(:whoami) { "something" }
+      CF::UAA::Info.stub(:whoami) { "something" }
 
       subject.access_token = OmniAuth::Strategies::CFAccessToken.new
       subject.raw_info.should_not be_empty
     end
 
     it 'should rescue, log, and return empty hash on target error' do
-      CF::UAA::Misc.stub(:whoami).and_raise(CF::UAA::TargetError)
+      CF::UAA::Info.stub(:whoami).and_raise(CF::UAA::TargetError)
       logger = double("logger")
       logger.should_receive(:error).once
       OmniAuth.config.logger = logger
