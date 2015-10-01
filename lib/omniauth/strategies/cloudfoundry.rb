@@ -50,9 +50,9 @@ module OmniAuth
 
       attr_accessor :access_token
       attr_reader :token_issuer
+      attr_writer :uaa_info
       attr_reader :auth_server_url
       attr_reader :token_server_url
-
 
       def client
 
@@ -81,6 +81,10 @@ module OmniAuth
         end
 
         @token_issuer
+      end
+
+      def uaa_info
+        @uaa_info ||= CF::UAA::Info.new(@token_server_url)
       end
 
       def callback_url
@@ -146,7 +150,7 @@ module OmniAuth
       end
 
       def raw_info
-        @raw_info ||= CF::UAA::Info.whoami(@token_server_url, self.access_token.auth_header)
+        @raw_info ||= uaa_info.whoami(self.access_token.auth_header)
       rescue CF::UAA::TargetError => e
         log :error, "#{e.message}: #{e.info}"
         {}

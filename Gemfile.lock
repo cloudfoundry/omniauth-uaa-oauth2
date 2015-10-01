@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    omniauth-uaa-oauth2 (0.0.4)
+    omniauth-uaa-oauth2 (0.0.5)
       cf-uaa-lib (>= 3.2, < 4.0)
       omniauth (~> 1.0)
 
