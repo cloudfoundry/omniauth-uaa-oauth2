@@ -47,6 +47,7 @@ module OmniAuth
       option :token_server_url, nil
       option :scope, nil
       option :async_calls, false
+      option :skip_ssl_validation, false
 
       attr_accessor :access_token
       attr_reader :token_issuer
@@ -72,10 +73,14 @@ module OmniAuth
             end
           end
 
-          @token_issuer ||= CF::UAA::TokenIssuer.new(@auth_server_url,
-                                                     options.client_id,
-                                                     options.client_secret,
-                                                     {:token_target => @token_server_url})
+          @token_issuer ||= CF::UAA::TokenIssuer.new(
+              @auth_server_url,
+              options.client_id,
+              options.client_secret,
+              {
+                 :token_target => @token_server_url,
+                 :skip_ssl_validation => options.skip_ssl_validation
+              })
           log :info, "Client: #{options.client_id} auth_server: #{@auth_server_url} token_server: #{@token_server_url}"
           @token_issuer.logger = OmniAuth.logger
         end
@@ -84,7 +89,10 @@ module OmniAuth
       end
 
       def uaa_info
-        @uaa_info ||= CF::UAA::Info.new(@token_server_url)
+        @uaa_info ||= CF::UAA::Info.new(
+            @token_server_url,
+            :skip_ssl_validation => options.skip_ssl_validation
+        )
       end
 
       def callback_url
