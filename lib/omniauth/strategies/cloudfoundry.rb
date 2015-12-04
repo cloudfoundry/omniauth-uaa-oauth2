@@ -187,7 +187,7 @@ module OmniAuth
 
       def expired?(access_token)
         access_token = access_token.auth_header if access_token.respond_to? :auth_header
-        expiry = CF::UAA::TokenCoder.decode(access_token.split()[1], nil, nil, false)[:expires_at]		
+        expiry = CF::UAA::TokenCoder.decode(access_token.split()[1])[:expires_at]
         expiry.is_a?(Integer) && expiry <= Time.now.to_i
       end
 
