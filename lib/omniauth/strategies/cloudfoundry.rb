@@ -35,6 +35,8 @@ module OmniAuth
       option :scope, nil
       option :async_calls, false
       option :skip_ssl_validation, false
+      option :ssl_ca_file, nil
+      option :ssl_cert_store, nil
 
       attr_accessor :access_token
       attr_reader :token_issuer
@@ -66,6 +68,8 @@ module OmniAuth
               options.client_secret,
               {
                  token_target: @token_server_url,
+                 ssl_ca_file: options.ssl_ca_file,
+                 ssl_cert_store: options.ssl_cert_store,
                  skip_ssl_validation: options.skip_ssl_validation
               })
           log :info, "Client: #{options.client_id} auth_server: #{@auth_server_url} token_server: #{@token_server_url}"
@@ -78,6 +82,8 @@ module OmniAuth
       def uaa_info
         @uaa_info ||= CF::UAA::Info.new(
             @token_server_url,
+            ssl_ca_file: options.ssl_ca_file,
+            ssl_cert_store: options.ssl_cert_store,
             skip_ssl_validation: options.skip_ssl_validation
         )
       end
