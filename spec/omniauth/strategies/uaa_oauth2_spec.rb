@@ -211,4 +211,15 @@ describe OmniAuth::Strategies::Cloudfoundry do
       subject.build_access_token('query-string').should be_empty
     end
   end
+
+  describe '#expired?' do
+    it 'sets params correctly on TokenCoder#decode' do
+      subject.access_token = OmniAuth::Strategies::CFAccessToken.new
+      CF::UAA::TokenCoder.should_receive(:decode)
+        .with(subject.access_token.auth_header.split()[1], verify: false, symbolize_keys: true)
+        .and_return({expires_at: 12345})
+
+      subject.expired?(subject.access_token)
+    end
+  end
 end
