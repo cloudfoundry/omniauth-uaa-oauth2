@@ -19,7 +19,7 @@ class App < Sinatra::Base
     content_type 'application/json'
     request.env['omniauth.auth'].to_hash.to_json rescue "No Data"
   end
-  
+
   get '/auth/failure' do
     content_type 'text/plain'
     request.env['omniauth.auth'].to_hash.inspect rescue "No Data"

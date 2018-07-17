@@ -65,8 +65,8 @@ module OmniAuth
               options.client_id,
               options.client_secret,
               {
-                 :token_target => @token_server_url,
-                 :skip_ssl_validation => options.skip_ssl_validation
+                 token_target: @token_server_url,
+                 skip_ssl_validation: options.skip_ssl_validation
               })
           log :info, "Client: #{options.client_id} auth_server: #{@auth_server_url} token_server: #{@token_server_url}"
           @token_issuer.logger = OmniAuth.logger
@@ -78,7 +78,7 @@ module OmniAuth
       def uaa_info
         @uaa_info ||= CF::UAA::Info.new(
             @token_server_url,
-            :skip_ssl_validation => options.skip_ssl_validation
+            skip_ssl_validation: options.skip_ssl_validation
         )
       end
 
@@ -131,10 +131,10 @@ module OmniAuth
 
       info do
         prune!({
-          :name       => raw_info["name"],
-          :email      => raw_info["email"],
-          :first_name => raw_info["given_name"],
-          :last_name  => raw_info["family_name"]
+          name:       raw_info["name"],
+          email:      raw_info["email"],
+          first_name: raw_info["given_name"],
+          last_name:  raw_info["family_name"]
         })
       end
 
