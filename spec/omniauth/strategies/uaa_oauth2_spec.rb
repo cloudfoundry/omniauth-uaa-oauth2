@@ -31,21 +31,21 @@ describe OmniAuth::Strategies::Cloudfoundry do
 
   describe 'set auth and token server' do
     it 'should set the right auth and token server' do
-      @options = {:auth_server_url => 'https://login.cloudfoundry.com'}
+      @options = {auth_server_url: 'https://login.cloudfoundry.com'}
       subject.client
       subject.auth_server_url.should eq('https://login.cloudfoundry.com')
       subject.token_server_url.should eq('https://login.cloudfoundry.com')
     end
 
     it 'should set the right auth and token server if independently set' do
-      @options = {:auth_server_url => 'https://login.cloudfoundry.com', :token_server_url => 'https://uaa.cloudfoundry.com'}
+      @options = {auth_server_url: 'https://login.cloudfoundry.com', token_server_url: 'https://uaa.cloudfoundry.com'}
       subject.client
       subject.auth_server_url.should eq('https://login.cloudfoundry.com')
       subject.token_server_url.should eq('https://uaa.cloudfoundry.com')
     end
 
     it 'should set the right auth and token server' do
-      @options = {:auth_server_url => 'login.cloudfoundry.com'}
+      @options = {auth_server_url: 'login.cloudfoundry.com'}
       subject.client
       subject.auth_server_url.should eq('https://login.cloudfoundry.com')
       subject.token_server_url.should eq('https://login.cloudfoundry.com')
@@ -111,13 +111,13 @@ describe OmniAuth::Strategies::Cloudfoundry do
 
   describe 'set scopes' do
     it 'should set the right scopes if requested' do
-      @options = {:auth_server_url => 'https://login.cloudfoundry.com', :token_server_url => 'https://uaa.cloudfoundry.com', :scope => "openid cloud_controller.read"}
+      @options = {auth_server_url: 'https://login.cloudfoundry.com', token_server_url: 'https://uaa.cloudfoundry.com', :scope => "openid cloud_controller.read"}
       subject.client
       subject.options[:scope].should eq("openid cloud_controller.read")
     end
 
     it 'should not set any scopes if not requested' do
-      @options = {:auth_server_url => 'https://login.cloudfoundry.com', :token_server_url => 'https://uaa.cloudfoundry.com'}
+      @options = {auth_server_url: 'https://login.cloudfoundry.com', token_server_url: 'https://uaa.cloudfoundry.com'}
       subject.client
       subject.options[:scope].should eq(nil)
     end
