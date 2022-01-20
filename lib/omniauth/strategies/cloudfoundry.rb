@@ -119,7 +119,7 @@ module OmniAuth
           log :info, "In callback phase #{request.query_string}"
           self.access_token = build_access_token(request.query_string)
           self.access_token = refresh(access_token) if !access_token.empty? && expired?(access_token)
-          log :info, "Got access token #{access_token.inspect}"
+          log :debug, "Got access token #{access_token.inspect}"
 
           super
         end
