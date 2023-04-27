@@ -15,7 +15,7 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
   gem.version       = OmniAuth::Cloudfoundry::VERSION
 
-  gem.add_runtime_dependency 'omniauth', '~> 1.0'
+  gem.add_runtime_dependency 'omniauth', '>= 1', '< 3'
   gem.add_runtime_dependency 'cf-uaa-lib', ['>= 3.2', '< 5.0']
 
   gem.add_development_dependency 'rspec', '~> 2.6.0'
