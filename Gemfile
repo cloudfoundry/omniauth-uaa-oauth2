@@ -13,7 +13,7 @@
 
 source 'http://rubygems.org'
 
-gem 'rake', '< 11.0'
+gem 'rake', '< 14.0'
 
 gemspec
 
