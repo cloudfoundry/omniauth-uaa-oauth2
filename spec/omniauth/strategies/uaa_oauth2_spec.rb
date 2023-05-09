@@ -126,14 +126,14 @@ describe OmniAuth::Strategies::Cloudfoundry do
   describe 'empty?' do
     it 'is empty when initialized without info' do
       token = OmniAuth::Strategies::CFAccessToken.new
-      token.empty?.should be_true
+      token.should be_empty
     end
 
     it 'is not empty when initialized with info' do
       token = OmniAuth::Strategies::CFAccessToken.new({
         'access_token' => 'some-token',
       })
-      token.empty?.should be_false
+      token.should_not be_empty
     end
   end
 

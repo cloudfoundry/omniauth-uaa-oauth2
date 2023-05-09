@@ -13,8 +13,6 @@
 
 source 'http://rubygems.org'
 
-gem 'rake', '< 11.0'
-
 gemspec
 
 group :example do
